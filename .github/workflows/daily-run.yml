@@ -1,10 +1,10 @@
 name: Daily Playwright Run
 
 on:
-  schedule:
+  #schedule:
     # Runs daily at 5:40 PM Calgary time
-    - cron: '53 17 * * *'
-      timezone: 'America/Edmonton'
+   # - cron: '53 17 * * *'
+    #  timezone: 'America/Edmonton'
   workflow_dispatch: # Allows manual trigger from GitHub UI anytime
 
 jobs:
