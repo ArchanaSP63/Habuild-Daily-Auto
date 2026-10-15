@@ -28,7 +28,7 @@ test('YouTube member URL',async()=>
     // 
     
     // Launch browser
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();    
     const START_URL = "https://u.habuild.in/y/sandeeppatil54";
     
