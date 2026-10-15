@@ -5,25 +5,28 @@ const { chromium } = require('playwright');
 
 test('YouTube member URL',async()=>
 {
-    const TIME_ZONE = 'America/Edmonton';
+    //const TIME_ZONE = 'America/Edmonton';
     // Calculate the next 2:20 PM in Calgary
-    let targetTime = DateTime.now()
-    .setZone(TIME_ZONE)
-    .set({ hour: 16, minute: 20, second: 0, millisecond: 0 });
+    
+    // let targetTime = DateTime.now()
+    // .setZone(TIME_ZONE)
+    // .set({ hour: 16, minute: 23, second: 0, millisecond: 0 });
 
-    if (targetTime <= DateTime.now().setZone(TIME_ZONE))
-    {
-        targetTime = targetTime.plus({ days: 1 });
-    }
+    // if (targetTime <= DateTime.now().setZone(TIME_ZONE))
+    // {
+    //     targetTime = targetTime.plus({ days: 1 });
+    // }
 
-    console.log('Scheduled time:', targetTime.toString());
+    // console.log('Scheduled time:', targetTime.toString());
 
-    // Wait until the scheduled time
-    const waitTime = targetTime.toMillis() - Date.now();
+    // // Wait until the scheduled time
+    // const waitTime = targetTime.toMillis() - Date.now();
 
-    console.log(`Waiting ${Math.ceil(waitTime / 1000)} seconds...`);
+    // console.log(`Waiting ${Math.ceil(waitTime / 1000)} seconds...`);
 
-    await new Promise(resolve => setTimeout(resolve, waitTime));
+    // await new Promise(resolve => setTimeout(resolve, waitTime));
+    // 
+    
     // Launch browser
     const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();    
@@ -53,8 +56,8 @@ test('YouTube member URL',async()=>
     sheet.addRow(['Execution Time (Calgary)', 'YouTube URL']);
 
     sheet.addRow([
-        DateTime.now().setZone(TIME_ZONE)
-            .toFormat('yyyy-MM-dd HH:mm:ss'),
+        //DateTime.now().setZone(TIME_ZONE)
+          //  .toFormat('yyyy-MM-dd HH:mm:ss'),
         {
             text: youtubeUrl,
             hyperlink: youtubeUrl
