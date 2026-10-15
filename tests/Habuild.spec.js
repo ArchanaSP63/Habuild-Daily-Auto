@@ -1,78 +1,61 @@
-import {test,expect} from '@playwright/test';
+
+const { test, expect } = require('@playwright/test');
 const ExcelJS = require('exceljs');
-const { DateTime } = require('luxon');
-const { chromium } = require('playwright');
+const fs = require('fs');
 
-test('YouTube member URL',async()=>
-{
-    //const TIME_ZONE = 'America/Edmonton';
-    // Calculate the next 2:20 PM in Calgary
-    
-    // let targetTime = DateTime.now()
-    // .setZone(TIME_ZONE)
-    // .set({ hour: 16, minute: 23, second: 0, millisecond: 0 });
+test('YouTube member URL', async ({ page }) => {
+    const START_URL = 'https://u.habuild.in/y/sandeeppatil54';
 
-    // if (targetTime <= DateTime.now().setZone(TIME_ZONE))
-    // {
-    //     targetTime = targetTime.plus({ days: 1 });
-    // }
+    // Open the member URL
+    await page.goto(START_URL, {
+        waitUntil: 'domcontentloaded'
+    });
 
-    // console.log('Scheduled time:', targetTime.toString());
-
-    // // Wait until the scheduled time
-    // const waitTime = targetTime.toMillis() - Date.now();
-
-    // console.log(`Waiting ${Math.ceil(waitTime / 1000)} seconds...`);
-
-    // await new Promise(resolve => setTimeout(resolve, waitTime));
-    // 
-    
-    // Launch browser
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();    
-    const START_URL = "https://u.habuild.in/y/sandeeppatil54";
-    
-    //await page.waitForLoadState('networkidle');
-    
-    try {
-    // Open the specified URL at the scheduled time
-    await page.goto(START_URL);
-
-    // Wait for redirect to YouTube
+    // Wait until the browser redirects to YouTube
     await page.waitForURL(
-        url => /(^|\.)youtube\.com$|(^|\.)youtu\.be$/.test(url.hostname),
+        url =>
+            url.hostname === 'youtube.com' ||
+            url.hostname.endsWith('.youtube.com') ||
+            url.hostname === 'youtu.be' ||
+            url.hostname.endsWith('.youtu.be'),
         { timeout: 60000 }
     );
 
-    // Copy the final YouTube URL
+    // Capture the final YouTube URL
     const youtubeUrl = page.url();
-
     console.log('YouTube URL:', youtubeUrl);
 
-    // Save the URL to Excel
+    // Open the existing Excel file, or create it on first run
+    const file = 'youtube-links.xlsx';
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('YouTube Links');
 
-    sheet.addRow(['Execution Time (Calgary)', 'YouTube URL']);
+    if (fs.existsSync(file)) {
+        await workbook.xlsx.readFile(file);
+    }
+
+    let sheet = workbook.getWorksheet('YouTube Links');
+
+    if (!sheet) {
+        sheet = workbook.addWorksheet('YouTube Links');
+    }
+
+    if (sheet.rowCount === 0) {
+        sheet.addRow(['Date', 'Time', 'YouTube URL']);
+    }
+
+    const now = new Date();
 
     sheet.addRow([
-        //DateTime.now().setZone(TIME_ZONE)
-          //  .toFormat('yyyy-MM-dd HH:mm:ss'),
-        {
-            text: youtubeUrl,
-            hyperlink: youtubeUrl
-        }
+        now.toLocaleDateString('en-CA', {
+            timeZone: 'America/Edmonton'
+        }),
+        now.toLocaleTimeString('en-CA', {
+            timeZone: 'America/Edmonton'
+        }),
+        { text: youtubeUrl, hyperlink: youtubeUrl }
     ]);
 
-    await workbook.xlsx.writeFile('youtube-links.xlsx');
+    await workbook.xlsx.writeFile(file);
 
-    console.log('URL saved to youtube-links.xlsx');
-
-} catch (error) {
-    console.error('Automation failed:', error.message);
-} finally {
-    await browser.close();
-}
-}
-
-)
+    console.log('YouTube URL saved to Excel.');
+});
