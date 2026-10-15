@@ -1,0 +1,41 @@
+name: Daily Playwright Run
+
+on:
+  schedule:
+    # Runs daily at 2:20 PM Calgary time (14:20 America/Edmonton)
+    - cron: '45 15 * * *'
+      timezone: 'America/Edmonton'
+  workflow_dispatch: # Allows manual trigger from GitHub UI anytime
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Habuild Test Script
+        run: npx playwright test tests/Habuild.spec.js
+
+      # Optional: Upload generated Excel file or test report as an artifact
+      - name: Upload Output Files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-output
+          path: |
+            output.xlsx
+            playwright-report/
+          retention-days: 7
