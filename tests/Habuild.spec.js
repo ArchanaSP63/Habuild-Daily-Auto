@@ -9,7 +9,7 @@ test('YouTube member URL',async()=>
     // Calculate the next 2:20 PM in Calgary
     let targetTime = DateTime.now()
     .setZone(TIME_ZONE)
-    .set({ hour: 16, minute: 14, second: 0, millisecond: 0 });
+    .set({ hour: 16, minute: 20, second: 0, millisecond: 0 });
 
     if (targetTime <= DateTime.now().setZone(TIME_ZONE))
     {
