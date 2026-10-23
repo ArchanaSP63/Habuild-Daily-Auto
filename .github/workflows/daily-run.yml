@@ -1,5 +1,8 @@
 name: Daily Playwright Run
 
+permissions:
+  contents: write
+
 on:
   schedule:
     # Edmonton is UTC-6 in daylight time and UTC-7 in standard time.
@@ -52,6 +55,16 @@ jobs:
         with:
           name: playwright-output
           path: |
-            output.xlsx
+            youtube-links.xlsx
             playwright-report/
           retention-days: 7
+
+      - name: Commit updated YouTube links
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add youtube-links.xlsx
+          if ! git diff --cached --quiet; then
+            git commit -m "Update daily YouTube links"
+            git push
+          fi
